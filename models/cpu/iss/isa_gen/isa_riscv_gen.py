@@ -688,6 +688,13 @@ class R5(Instr):
                             #UnsignedImm(0, Range(25, 0)),
                             UnsignedImm(0, Range(25, 1)),
                         ]            
+        elif format == 'OPVFF':
+            self.args = [   OutFReg    (0, Range(7 , 5)),
+                            InFReg     (0, Range(15, 5)),#rs1/vs1
+                            InReg      (1, Range(20, 5)),#vs2
+                            #UnsignedImm(0, Range(25, 0)),
+                            UnsignedImm(0, Range(25, 1)),
+                        ]                        
         elif format == 'OPIVI':
             self.args = [   OutReg     (0, Range(7 , 5)),
                             SignedImm  (0, Range(15, 5)),
@@ -970,7 +977,7 @@ rv32v = IsaSubset('v'  , [
     
     R5('vfmv.v.f'         ,   'OPVF' ,    '010111 - ----- ----- 101 ----- 1010111'),
     R5('vfmv.s.f'         ,   'OPVF' ,    '010000 - 00000 ----- 101 ----- 1010111'),
-    R5('vfmv.f.s'         ,   'OPVF' ,    '010000 - ----- 00000 001 ----- 1010111'),
+    R5('vfmv.f.s'         ,   'OPVFF',    '010000 - ----- 00000 001 ----- 1010111'),
 
     R5('vle8.v'           ,   'OPV'  ,    '000 0 00 - 00000 ----- 000 ----- 0000111'),# vd, (rs1), vm
     R5('vle16.v'          ,   'OPV'  ,    '000 0 00 - 00000 ----- 101 ----- 0000111'),

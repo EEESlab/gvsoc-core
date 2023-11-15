@@ -74,6 +74,15 @@ def get_generated_component(sources, cflags):
     return generated_components[comp_name]
 
 
+class SlaveItf():
+
+    def __init__(self, component, itf_name, signature=None):
+        self.component = component
+        self.itf_name = itf_name
+        self.signature = signature
+
+
+
 class Port():
 
     def __init__(self, comp, name):
@@ -176,6 +185,20 @@ class Component(object):
 
         if parent is not None:
             parent.add_component(name, self)
+
+    def i_CLOCK(self) -> SlaveItf:
+        """Returns the clock port.
+
+        A clock generator should be bound on this port if this component is clocked.\n
+        It is not needed if the component is asynchronous.\n
+        It instantiates a port of type vp::clk_slave.\n
+
+        Returns
+        ----------
+        SlaveItf
+            The slave interface
+        """
+        return SlaveItf(self, 'clock', signature='clock')
 
     def gen_stimuli(self):
         """Generate stimuli.
@@ -447,6 +470,18 @@ class Component(object):
             Name of the port where the binding should be done on slave side.
         """
         self.bindings.append([master, master_itf, slave, slave_itf, master_properties, slave_properties])
+
+
+    def itf_bind(self, master_itf_name: str, slave_itf: SlaveItf, signature: str=None):
+        slave_itf_instance = slave_itf()
+
+        if signature is not None and slave_itf_instance.signature is not None and \
+                signature != slave_itf_instance.signature:
+            master_name = f'{signature}@{self.get_path()}->{master_itf_name}'
+            slave_name = f'{slave_itf_instance.signature}@{slave_itf_instance.component.get_path()}->{slave_itf_instance.itf_name}'
+            raise RuntimeError(f'Invalid signature (master: {master_name}, slave: {slave_name})')
+
+        self.parent.bind(self, master_itf_name, slave_itf_instance.component, slave_itf_instance.itf_name)
 
 
     def load_property_file(self, path):

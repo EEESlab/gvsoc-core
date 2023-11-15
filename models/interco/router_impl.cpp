@@ -354,7 +354,7 @@ void router::response(void *_this, vp::io_req *req)
 
 std::string router::handle_command(Gv_proxy *proxy, FILE *req_file, FILE *reply_file, std::vector<std::string> args, std::string cmd_req)
 {
-    if (args[0] == "mem_write" or args[0] == "mem_read")
+    if (args[0] == "mem_write" || args[0] == "mem_read")
     {
         int error = 0;
         bool is_write = args[0] == "mem_write";

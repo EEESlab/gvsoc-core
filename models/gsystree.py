@@ -75,12 +75,25 @@ def get_generated_component(sources, cflags):
 
 
 class SlaveItf():
+    """Slave interface
 
-    def __init__(self, component, itf_name, signature=None):
+    This can be used to instantiate a slave interface which can be used to bind a master to it
+    using the itf_bind method.\n
+
+    Attributes
+    ----------
+    component : Component
+        The component which the slave interface belongs to.
+    itf_name: str
+        The name of the slave interface.
+    signature: str
+        The signature of the interface. If specified, this is used to check that the interface
+        is bound to a master interface of the same signature.
+    """
+    def __init__(self, component: 'Component', itf_name: str, signature: str=None):
         self.component = component
         self.itf_name = itf_name
         self.signature = signature
-
 
 
 class Port():
@@ -148,10 +161,9 @@ class Component(object):
         Name of the component. This names is used to indentify this component in the parent component.
     options: list
         List of options of forms key=value which should overwrite component properties.
-    
     """
 
-    def __init__(self, parent, name, options=None, is_top=False):
+    def __init__(self, parent, name, options=None):
         self.name = name
         self.parent = parent
         self.json_config_files = []
@@ -163,7 +175,7 @@ class Component(object):
         self.finalize_done = False
         self.options = []
         self.comp_options = {}
-        self.is_top = is_top
+        self.is_top = False
         self.vcd_group_create = True
         self.vcd_group_closed = True
         self.component = None
@@ -180,7 +192,7 @@ class Component(object):
                 name_list.append(value)
 
                 options_list.append(name_list)
-            
+
             self.__set_options(options_list)
 
         if parent is not None:
@@ -199,6 +211,76 @@ class Component(object):
             The slave interface
         """
         return SlaveItf(self, 'clock', signature='clock')
+
+    def add_property(self, name: str, property: str, format: type=None):
+        """Add a property.
+
+        A property is made available to the C++ model.
+
+        Parameters
+        ----------
+        name : str
+            Name of the property.
+
+        property : str, int, float, list or dict
+            Value of the property.
+        """
+        properties = self.properties
+
+        for item in name.split('/')[:-1]:
+            if properties.get(item) is None:
+                properties[item] = {}
+
+            properties = properties.get(item)
+
+        properties[name.split('/')[-1]] = property
+
+        return self.get_property(name, format=format)
+
+    def add_properties(self, properties: dict):
+        """Add properties.
+
+        Properties are made available to the C++ model.\n
+        This adds several properties at once, trough a dictionary, whose keys are the property
+        names, and the values the values of the properties.\n
+
+        Parameters
+        ----------
+        properties : dict
+            Dictionary containing the properties to be added.
+        """
+        self.properties = self.__merge_properties(self.properties, properties)
+
+    def add_sources(self, sources: list):
+        """Add sources.
+
+        The specified sources are added to the component.\n
+        They will be automatically compiled when the component is compiled.\n
+        Note that if the same component is instantiated several times with different sources, it
+        will be compiled once for each set of sources.\n
+
+        Parameters
+        ----------
+        sources : list
+            List of source files to be added. Their path can be relative, in which case they will
+            be searched from the platform target directories.
+        """
+        self.sources += sources
+
+    def add_c_flags(self, flags):
+        """Add C flags.
+
+        The specified C flags are added to the component and use to compile all the sources
+        of the component.
+        Note that if the same component is instantiated several times with different C flags, it
+        will be compiled once for each set of C flags.\n
+
+        Parameters
+        ----------
+        flags : list
+            List of C flags to be added.
+        """
+        self.c_flags += flags
 
     def gen_stimuli(self):
         """Generate stimuli.
@@ -357,7 +439,7 @@ class Component(object):
         ----------
         name : str
             Name of the component.
-            
+
         Returns
         -------
         Component
@@ -365,32 +447,6 @@ class Component(object):
         """
         return self.components[name]
 
-
-    def add_property(self, name, property, format=None):
-        """Add a property.
-
-        A property is made available to the C++ model.
-
-        Parameters
-        ----------
-        name : str
-            Name of the property.
-
-        property : str, int, float, list or dict
-            Value of the property.
-            
-        """
-        properties = self.properties
-
-        for item in name.split('/')[:-1]:
-            if properties.get(item) is None:
-                properties[item] = {}
-
-            properties = properties.get(item)
-
-        properties[name.split('/')[-1]] = property
-
-        return self.get_property(name, format=format)
 
 
     def get_property(self, name, format=None):
@@ -497,12 +553,6 @@ class Component(object):
         with open(self.get_file_path(path), 'r') as fd:
             return json.load(fd)
 
-    def add_sources(self, sources):
-        self.sources += sources
-
-    def add_c_flags(self, flags):
-        self.c_flags += flags
-
     def set_component(self, name):
         self.component = name
         self.add_property('vp_component', name)
@@ -593,9 +643,6 @@ class Component(object):
 
         return None
 
-
-    def add_properties(self, properties):
-        self.properties = self.__merge_properties(self.properties, properties)
 
     def vcd_group(self, closed=True, skip=False):
         self.vcd_group_create = not skip

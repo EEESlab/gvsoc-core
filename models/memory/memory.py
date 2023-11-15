@@ -51,7 +51,7 @@ class Memory(gsystree.Component):
             stim_file: str=None, power_trigger: bool=False,
             align: int=0, atomics: bool=False):
 
-        super(Memory, self).__init__(parent, name)
+        super().__init__(parent, name)
 
         self.add_sources(['memory/memory.cpp'])
 

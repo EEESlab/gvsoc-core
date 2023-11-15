@@ -34,16 +34,20 @@ class Clock_domain(gsystree.Component):
         The name of the component within the parent space.
     frequency: int
         The initial frequency of the clock generator.
+    factor: int
+        Multiplication factor. The actual output frequency will be multiplied by this factor.
+        This can be used for example to be able to schedule events on both raising
+        and falling edges.
     """
 
-    def __init__(self, parent: gsystree.Component, name: str, frequency:int):
+    def __init__(self, parent: gsystree.Component, name: str, frequency: int, factor: int=1):
         super().__init__(parent, name)
 
         self.set_component('vp.clock_domain_impl')
 
         self.add_properties({
             'frequency': frequency,
-            'factor': 1
+            'factor': factor
         })
 
     def gen_gtkw(self, tree, comp_traces):

@@ -118,7 +118,7 @@ class Router(gsystree.Component):
         return gsystree.SlaveItf(self, 'input', signature='io')
 
     def o_MAP(self, itf: gsystree.SlaveItf, name:str, base: int=None, size: int=None,
-            remove_offset: int=None):
+            rm_base: bool=True, remove_offset: int=None, id: int=None, latency: int=None):
         """Binds the output to a memory region.
 
         This ports can be used to attach a memory region to the specified slave interface.\n
@@ -138,9 +138,20 @@ class Router(gsystree.Component):
             Base address of the target memory area.
         size: int
             Size of the target memory area.
+        rm_base: int
+            The base address is substracted to the address of any request going through this mapping.
+            This can be used to convert an address into a local offset.
         remove_offset: int
             This address is substracted to the address of any request going through this mapping.
             This can be used to convert an address into a local offset.
+        id: int
+            Counter id where this mapping is reporting statistics. All mappings with same id
+            are cumulated together, which is a way to collect statistics fro several mappings.
+        latency: int
+            Latency applied to any request going through this mapping. This impacts the start time
+            of the request.
         """
-        self.add_mapping(name, base=base, remove_offset=remove_offset, size=size)
+        if rm_base and remove_offset is None:
+            remove_offset = base
+        self.add_mapping(name, base=base, remove_offset=remove_offset, size=size, id=id, latency=latency)
         self.itf_bind(name, itf, signature='io')

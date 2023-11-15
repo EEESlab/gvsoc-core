@@ -473,15 +473,14 @@ class Component(object):
 
 
     def itf_bind(self, master_itf_name: str, slave_itf: SlaveItf, signature: str=None):
-        slave_itf_instance = slave_itf()
 
-        if signature is not None and slave_itf_instance.signature is not None and \
-                signature != slave_itf_instance.signature:
+        if signature is not None and slave_itf.signature is not None and \
+                signature != slave_itf.signature:
             master_name = f'{signature}@{self.get_path()}->{master_itf_name}'
-            slave_name = f'{slave_itf_instance.signature}@{slave_itf_instance.component.get_path()}->{slave_itf_instance.itf_name}'
+            slave_name = f'{slave_itf.signature}@{slave_itf.component.get_path()}->{slave_itf.itf_name}'
             raise RuntimeError(f'Invalid signature (master: {master_name}, slave: {slave_name})')
 
-        self.parent.bind(self, master_itf_name, slave_itf_instance.component, slave_itf_instance.itf_name)
+        self.parent.bind(self, master_itf_name, slave_itf.component, slave_itf.itf_name)
 
 
     def load_property_file(self, path):

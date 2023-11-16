@@ -34,9 +34,8 @@ class Rsp;
 class Gdb_server : public vp::component, vp::Gdbserver_engine
 {
 public:
-    Gdb_server(js::config *config);
+    Gdb_server(vp::ComponentConf &conf);
 
-    void pre_pre_build();
     int build();
     void start();
 

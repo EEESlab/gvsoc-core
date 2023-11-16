@@ -23,9 +23,10 @@
 #include "rsp.hpp"
 
 
-Gdb_server::Gdb_server(js::config *config)
-: vp::component(config)
+Gdb_server::Gdb_server(vp::ComponentConf &conf)
+: vp::component(conf)
 {
+    js::config *config = this->get_js_config();
     this->rsp = NULL;
 
     if (config->get_child_bool("enabled"))
@@ -34,6 +35,11 @@ Gdb_server::Gdb_server(js::config *config)
     }
 
     this->active_core = 9;
+
+    if (this->get_js_config()->get_child_bool("enabled"))
+    {
+        new_service("gdbserver", static_cast<Gdbserver_engine *>(this));
+    }
 }
 
 
@@ -54,15 +60,6 @@ int Gdb_server::register_core(vp::Gdbserver_core *core)
 void Gdb_server::signal(vp::Gdbserver_core *core, int signal, std::string reason, int info)
 {
     this->rsp->signal_from_core(core, signal, reason, info);
-}
-
-
-void Gdb_server::pre_pre_build()
-{
-    if (this->get_js_config()->get_child_bool("enabled"))
-    {
-        new_service("gdbserver", static_cast<Gdbserver_engine *>(this));
-    }
 }
 
 
@@ -172,53 +169,7 @@ void Gdb_server::watchpoint_remove(bool is_write, uint64_t addr, int size)
     }
 }
 
-extern "C" vp::component *vp_constructor(js::config *config)
+extern "C" vp::component *gv_new(vp::ComponentConf &conf)
 {
-  return new Gdb_server(config);
+  return new Gdb_server(conf);
 }
-
-#if 0
-
-void Gdb_server::start() {
-    target = std::make_shared<Target>(this);
-
-    bkp = std::make_shared<Breakpoints>(this);
-
-  
-}
- 
-void Gdb_server::target_update_power() {
-    target->update_power();
-}
-
-void Gdb_server::signal_exit(int status) {
-    rsp->signal_exit(status);
-}
-
-void Gdb_server::refresh_target()
-{
-    target->reinitialize();
-    target->update_power();
-    bkp->enable_all();
-}
-
-int Gdb_server::stop()
-{
-    if (rsp != NULL)
-    {
-        rsp->stop();
-        rsp = NULL;
-    }
-    return 1;
-}
-
-void Gdb_server::abort()
-{
-    if (rsp != NULL)
-    {
-        rsp->abort();
-        rsp = NULL;
-    }
-}
-
-#endif

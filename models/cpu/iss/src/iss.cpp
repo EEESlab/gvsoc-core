@@ -46,7 +46,7 @@ int IssWrapper::build()
     this->iss.spatz.build();
 #endif
 
-    traces.new_trace("wrapper", this->get_trace(), vp::DEBUG);
+    traces.new_trace("wrapper", &this->trace, vp::DEBUG);
 
     this->target_open();
 
@@ -55,11 +55,11 @@ int IssWrapper::build()
 
 void IssWrapper::start()
 {
-    vp_assert_always(this->iss.lsu.data.is_bound(), this->get_trace(), "Data master port is not connected\n");
-    vp_assert_always(this->iss.prefetcher.fetch_itf.is_bound(), this->get_trace(), "Fetch master port is not connected\n");
+    vp_assert_always(this->iss.lsu.data.is_bound(), &this->trace, "Data master port is not connected\n");
+    vp_assert_always(this->iss.prefetcher.fetch_itf.is_bound(), &this->trace, "Fetch master port is not connected\n");
     // vp_assert_always(this->irq_ack_itf.is_bound(), &this->trace, "IRQ ack master port is not connected\n");
 
-    this->get_trace()->msg("ISS start (fetch: %d, boot_addr: 0x%lx)\n",
+    this->trace.msg("ISS start (fetch: %d, boot_addr: 0x%lx)\n",
         iss.exec.fetch_enable_reg.get(), get_config_int("boot_addr"));
 
     this->iss.timing.background_power.leakage_power_start();

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(gvsoc-engine LANGUAGES CXX C)
 
 set(GVSOC_ENGINE_CXX_SRCS
+    "src/component.cpp"
     "src/trace/lxt2.cpp"
     "src/trace/event.cpp"
     "src/trace/trace.cpp"

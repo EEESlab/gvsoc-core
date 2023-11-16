@@ -134,7 +134,7 @@ void Hyperflash::erase_sector(unsigned int addr)
 
   if (addr >= this->size)
   {
-    this->warning.force_warning("Received out-of-bound erase request (addr: 0x%x, flash_size: 0x%x)\n", addr, this->size);
+    this->trace.force_warning("Received out-of-bound erase request (addr: 0x%x, flash_size: 0x%x)\n", addr, this->size);
     return;
   }
 
@@ -158,7 +158,7 @@ void Hyperflash::handle_access(int reg_access, int address, int read, uint8_t da
 {
   if (address >= this->size)
   {
-    this->warning.force_warning("Received out-of-bound request (addr: 0x%x, flash_size: 0x%x)\n", address, this->size);
+    this->trace.force_warning("Received out-of-bound request (addr: 0x%x, flash_size: 0x%x)\n", address, this->size);
   }
   else
   {
@@ -200,7 +200,7 @@ void Hyperflash::handle_access(int reg_access, int address, int read, uint8_t da
 
             if (new_value != data)
             {
-              this->warning.force_warning("Failed to program specified location (addr: 0x%x, flash_val: 0x%2.2x, program_val: 0x%2.2x)\n", address, this->data[address], data);
+              this->trace.force_warning("Failed to program specified location (addr: 0x%x, flash_val: 0x%2.2x, program_val: 0x%2.2x)\n", address, this->data[address], data);
             }
 
             this->data[address] &= new_value;
@@ -224,7 +224,7 @@ void Hyperflash::handle_access(int reg_access, int address, int read, uint8_t da
 
           if (new_value != data)
           {
-            this->warning.force_warning("Failed to program specified location (addr: 0x%x, flash_val: 0x%2.2x, program_val: 0x%2.2x)\n", address, this->data[address], data);
+            this->trace.force_warning("Failed to program specified location (addr: 0x%x, flash_val: 0x%2.2x, program_val: 0x%2.2x)\n", address, this->data[address], data);
           }
 
           this->data[address] &= data;
@@ -329,7 +329,7 @@ void Hyperflash::handle_access(int reg_access, int address, int read, uint8_t da
 
 int Hyperflash::preload_file(char *path)
 {
-  this->get_trace()->msg(vp::trace::LEVEL_INFO, "Preloading memory with stimuli file (path: %s)\n", path);
+  this->trace.msg(vp::trace::LEVEL_INFO, "Preloading memory with stimuli file (path: %s)\n", path);
 
   if (this->get_js_config()->get_child_bool("writeback"))
   {
@@ -380,7 +380,7 @@ int Hyperflash::preload_file(char *path)
  */
 int Hyperflash::setup_writeback_file(const char *path)
 {
-  this->get_trace()->msg("writeback memory to an output file (path: %s)\n", path);
+  this->trace.msg("writeback memory to an output file (path: %s)\n", path);
   int fd = open(path, O_RDWR | O_CREAT, 0600);
   if (fd < 0) {
 	  printf("Unable to open writeback file (path: %s, error: %s)\n", path, strerror(errno));

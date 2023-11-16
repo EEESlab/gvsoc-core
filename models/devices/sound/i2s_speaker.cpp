@@ -137,7 +137,7 @@ Outfile_wav::Outfile_wav(Speaker *top, std::string file, int width, int sample_r
 
 #else
 
-    this->top->get_trace()->fatal("Unable to open file (%s), libsndfile support is not active\n", file.c_str());
+    this->top->trace.fatal("Unable to open file (%s), libsndfile support is not active\n", file.c_str());
     return;
 
 #endif
@@ -202,7 +202,7 @@ int Speaker::build()
 
             if (ext == NULL)
             {
-                this->get_trace()->fatal("Unsupported file extension: %s\n", out_file.c_str());
+                this->trace.fatal("Unsupported file extension: %s\n", out_file.c_str());
                 return -1;
             }
 
@@ -216,7 +216,7 @@ int Speaker::build()
             }
             else
             {
-                this->get_trace()->fatal("Unsupported file extension: %s\n", out_file.c_str());
+                this->trace.fatal("Unsupported file extension: %s\n", out_file.c_str());
             }
         }
     }

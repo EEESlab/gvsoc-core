@@ -968,7 +968,7 @@ void Spim_verif::spi_load(js::config *config)
     FILE *file = fopen(path.c_str(), "r");
     if (file == NULL)
     {
-        this->get_trace()->fatal("Unable to open stim file (path: %s, error: %s)\n", path.c_str(), strerror(errno));
+        this->trace.fatal("Unable to open stim file (path: %s, error: %s)\n", path.c_str(), strerror(errno));
         return;
     }
 
@@ -986,7 +986,7 @@ void Spim_verif::spi_load(js::config *config)
         if ((err = fscanf(file, "@%x %x\n", &addr, &value)) != 2)
         {
             if (err == EOF) break;
-            this->get_trace()->fatal("Incorrect stimuli file (path: %s)\n", path.c_str());
+            this->trace.fatal("Incorrect stimuli file (path: %s)\n", path.c_str());
             return;
         }
         

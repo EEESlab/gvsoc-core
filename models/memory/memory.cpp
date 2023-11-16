@@ -26,11 +26,11 @@
 #include <string.h>
 
 
-class memory : public vp::component
+class Memory : public vp::component
 {
 
 public:
-    memory(js::config *config);
+    Memory(vp::ComponentConf &conf);
 
     int build();
     void start();
@@ -82,16 +82,16 @@ private:
 
 
 
-memory::memory(js::config *config)
-    : vp::component(config)
+Memory::Memory(vp::ComponentConf &conf)
+    : vp::component(conf)
 {
 }
 
 
 
-vp::io_req_status_e memory::req(void *__this, vp::io_req *req)
+vp::io_req_status_e Memory::req(void *__this, vp::io_req *req)
 {
-    memory *_this = (memory *)__this;
+    Memory *_this = (Memory *)__this;
 
     uint64_t offset = req->get_addr();
     uint8_t *data = req->get_data();
@@ -99,13 +99,13 @@ vp::io_req_status_e memory::req(void *__this, vp::io_req *req)
 
     if (!_this->powered_up)
     {
-        _this->trace.force_warning("Accessing memory while it is down (offset: 0x%x, size: 0x%x, is_write: %d)\n", offset, size, req->get_is_write());
+        _this->trace.force_warning("Accessing Memory while it is down (offset: 0x%x, size: 0x%x, is_write: %d)\n", offset, size, req->get_is_write());
         return vp::IO_REQ_INVALID;
     }
 
     _this->trace.msg("Memory access (offset: 0x%x, size: 0x%x, is_write: %d)\n", offset, size, req->get_is_write());
 
-    // Impact the memory bandwith on the packet
+    // Impact the Memory bandwith on the packet
     if (_this->width_bits != 0)
     {
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -193,7 +193,7 @@ vp::io_req_status_e memory::req(void *__this, vp::io_req *req)
 
 
 
-vp::io_req_status_e memory::handle_write(uint64_t offset, uint64_t size, uint8_t *data)
+vp::io_req_status_e Memory::handle_write(uint64_t offset, uint64_t size, uint8_t *data)
 {
     if (this->check_mem)
     {
@@ -212,7 +212,7 @@ vp::io_req_status_e memory::handle_write(uint64_t offset, uint64_t size, uint8_t
 
 
 
-vp::io_req_status_e memory::handle_read(uint64_t offset, uint64_t size, uint8_t *data)
+vp::io_req_status_e Memory::handle_read(uint64_t offset, uint64_t size, uint8_t *data)
 {
     if (this->check_mem)
     {
@@ -241,7 +241,7 @@ static inline int64_t get_signed_value(int64_t val, int bits)
 }
 
 
-vp::io_req_status_e memory::handle_atomic(uint64_t addr, uint64_t size, uint8_t *in_data,
+vp::io_req_status_e Memory::handle_atomic(uint64_t addr, uint64_t size, uint8_t *in_data,
     uint8_t *out_data, vp::io_req_opcode_e opcode, int initiator)
 {
     int64_t operand = 0;
@@ -326,7 +326,7 @@ vp::io_req_status_e memory::handle_atomic(uint64_t addr, uint64_t size, uint8_t 
 
 
 
-void memory::reset(bool active)
+void Memory::reset(bool active)
 {
     if (active)
     {
@@ -337,41 +337,41 @@ void memory::reset(bool active)
 
 
 
-void memory::power_ctrl_sync(void *__this, bool value)
+void Memory::power_ctrl_sync(void *__this, bool value)
 {
-    memory *_this = (memory *)__this;
+    Memory *_this = (Memory *)__this;
     _this->powered_up = value;
 }
 
 
 
-void memory::meminfo_sync_back(void *__this, void **value)
+void Memory::meminfo_sync_back(void *__this, void **value)
 {
-    memory *_this = (memory *)__this;
+    Memory *_this = (Memory *)__this;
     *value = _this->mem_data;
 }
 
 
 
-void memory::meminfo_sync(void *__this, void *value)
+void Memory::meminfo_sync(void *__this, void *value)
 {
-    memory *_this = (memory *)__this;
+    Memory *_this = (Memory *)__this;
     _this->mem_data = (uint8_t *)value;
 }
 
 
 
-int memory::build()
+int Memory::build()
 {
     traces.new_trace("trace", &trace, vp::DEBUG);
-    in.set_req_meth(&memory::req);
+    in.set_req_meth(&Memory::req);
     new_slave_port("input", &in);
 
-    this->power_ctrl_itf.set_sync_meth(&memory::power_ctrl_sync);
+    this->power_ctrl_itf.set_sync_meth(&Memory::power_ctrl_sync);
     new_slave_port("power_ctrl", &this->power_ctrl_itf);
 
-    this->meminfo_itf.set_sync_back_meth(&memory::meminfo_sync_back);
-    this->meminfo_itf.set_sync_meth(&memory::meminfo_sync);
+    this->meminfo_itf.set_sync_back_meth(&Memory::meminfo_sync_back);
+    this->meminfo_itf.set_sync_meth(&Memory::meminfo_sync);
     new_slave_port("meminfo", &this->meminfo_itf);
 
     js::config *config = get_js_config()->get("power_trigger");
@@ -390,14 +390,14 @@ int memory::build()
 
 
 
-void memory::start()
+void Memory::start()
 {
     size = this->get_js_config()->get("size")->get_int();
     check = get_config_bool("check");
     width_bits = get_config_int("width_bits");
     int align = get_config_int("align");
 
-    trace.msg("Building memory (size: 0x%x, check: %d)\n", size, check);
+    trace.msg("Building Memory (size: 0x%x, check: %d)\n", size, check);
 
     if (align)
     {
@@ -419,18 +419,18 @@ void memory::start()
         check_mem = NULL;
     }
 
-    // Initialize the memory with a special value to detect uninitialized
+    // Initialize the Memory with a special value to detect uninitialized
     // variables
     memset(mem_data, 0x57, size);
 
-    // Preload the memory
+    // Preload the Memory
     js::config *stim_file_conf = this->get_js_config()->get("stim_file");
     if (stim_file_conf != NULL)
     {
         string path = stim_file_conf->get_str();
         if (path != "")
         {
-            trace.msg("Preloading memory with stimuli file (path: %s)\n", path.c_str());
+            trace.msg("Preloading Memory with stimuli file (path: %s)\n", path.c_str());
 
             FILE *file = fopen(path.c_str(), "rb");
             if (file == NULL)
@@ -453,7 +453,7 @@ void memory::start()
 
 
 
-extern "C" vp::component *vp_constructor(js::config *config)
+extern "C" vp::component *gv_new(vp::ComponentConf &conf)
 {
-    return new memory(config);
+    return new Memory(conf);
 }

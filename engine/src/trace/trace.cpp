@@ -95,16 +95,6 @@ void vp::component_trace::new_trace_event_string(std::string name, trace *trace)
     this->reg_trace(trace, 1);
 }
 
-void vp::component_trace::post_post_build()
-{
-    // TODO this seems useless now that the traces are registered immediately to the trace engine
-    // trace_manager = (vp::trace_engine *)top.get_service("trace");
-    // for (auto& x: trace_events) {
-    //   x.second->trace_manager = trace_manager;
-    //   trace_manager->reg_trace(x.second, 1, top.get_path(), x.first);
-    // }
-}
-
 #ifdef VP_TRACE_ACTIVE
 bool vp::trace::get_active(int level)
 {

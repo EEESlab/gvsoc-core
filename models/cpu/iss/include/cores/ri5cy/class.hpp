@@ -89,6 +89,9 @@ public:
     virtual void target_open();
 
     Iss iss;
+
+private:
+    vp::trace trace;
 };
 
 inline Iss::Iss(vp::component &top)

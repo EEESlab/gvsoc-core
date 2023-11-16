@@ -340,7 +340,7 @@ void Mx25::erase_sector(unsigned int addr)
 
     if (addr >= this->size)
     {
-        this->warning.force_warning(
+        this->trace.force_warning(
             "Received out-of-bound erase request (addr: 0x%x, flash_size: 0x%x)\n",
             addr, this->size);
         return;
@@ -367,7 +367,7 @@ uint32_t Mx25::handle_array_access(int address, int is_write, uint8_t data)
 {
     if (address >= this->size)
     {
-        this->warning.force_warning(
+        this->trace.force_warning(
             "Received out-of-bound request (addr: 0x%x, flash_size: 0x%x)\n", address, this->size);
         return 0;
     }
@@ -391,7 +391,7 @@ uint32_t Mx25::handle_array_access(int address, int is_write, uint8_t data)
 
         if (new_value != data)
         {
-            this->warning.force_warning(
+            this->trace.force_warning(
                 "Failed to program specified location (addr: 0x%x, flash_val: 0x%2.2x, "
                 "program_val: 0x%2.2x)\n", address, this->data[address], data);
         }
@@ -891,7 +891,7 @@ void Mx25::cs_sync(int cs, int value)
 
 int Mx25::preload_file(char *path, bool writeback)
 {
-    this->get_trace()->msg(vp::trace::LEVEL_INFO,
+    this->trace.msg(vp::trace::LEVEL_INFO,
         "Preloading memory with stimuli file (path: %s)\n", path);
 
     if (writeback)

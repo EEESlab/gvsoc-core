@@ -38,6 +38,7 @@ private:
     inline void raise_edge();
     static void power_sync(void *__this, bool active);
 
+    vp::trace trace;
     vp::wire_slave<bool> power_itf;
     vp::clock_master clock_ctrl_itf;
     vp::clock_master clock_sync_itf;
@@ -52,7 +53,7 @@ private:
 
 inline void Clock::raise_edge()
 {
-    this->get_trace()->msg(vp::trace::LEVEL_TRACE, "Changing clock level (level: %d)\n", value);
+    this->trace.msg(vp::trace::LEVEL_TRACE, "Changing clock level (level: %d)\n", value);
 
     if (this->target_frequency)
     {
@@ -84,7 +85,7 @@ void Clock::power_sync(void *__this, bool active)
 {
     Clock *_this = (Clock *)__this;
 
-    _this->get_trace()->msg(vp::trace::LEVEL_DEBUG, "Changing clock power (is_on: %d)\n", active);
+    _this->trace.msg(vp::trace::LEVEL_DEBUG, "Changing clock power (is_on: %d)\n", active);
 
     if (active != _this->powered_on)
     {
@@ -117,6 +118,7 @@ Clock::Clock(js::config *config)
 
 int Clock::build()
 {
+    traces.new_trace("trace", &trace, vp::DEBUG);
     this->event = this->event_new(Clock::edge_handler);
 
     this->power_itf.set_sync_meth(&Clock::power_sync);

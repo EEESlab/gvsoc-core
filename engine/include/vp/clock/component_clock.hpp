@@ -43,7 +43,6 @@ namespace vp {
 
     static void clk_reg(component *_this, component *clock);
     static void clk_set_frequency(component *_this, int64_t frequency);
-    static void reset_sync(void *_this, bool active);
 
     inline void event_enqueue(clock_event *event, int64_t cycles);
 
@@ -74,7 +73,7 @@ namespace vp {
 
     inline int64_t get_cycles();
 
-    void pre_build(component *comp);
+    void build_clock(vp::component &comp);
 
     inline int64_t get_period();
 

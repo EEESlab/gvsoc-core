@@ -189,7 +189,7 @@ void spiflash::page_program(void *__this, int data_0, int data_1, int data_2, in
     if (_this->pending_bits % 8 == 0)
     {
       if (_this->current_addr >= _this->size) {
-        _this->warning.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
+        _this->trace.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
         return;
       }
 
@@ -272,7 +272,7 @@ void spiflash::quad_read(void *__this, int data_0, int data_1, int data_2, int d
     if (_this->pending_bits % 8 == 0)
     {
       if (_this->current_addr >= _this->size) {
-        _this->warning.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
+        _this->trace.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
         return;
       }
 
@@ -302,7 +302,7 @@ void spiflash::single_read(void *__this, int data_0, int data_1, int data_2, int
     if (_this->pending_bits % 8 == 0)
     {
       if (_this->current_addr >= _this->size) {
-        _this->warning.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
+        _this->trace.force_warning("Received out-of-bound request (address: 0x%x, memSize: 0x%x)\n", _this->current_addr, _this->size);
         return;
       }
 
@@ -403,7 +403,7 @@ void spiflash::handle_data(int data_0, int data_1, int data_2, int data_3)
       this->pending_command = this->commands[this->pending_command_id];
       if (this->pending_command == NULL)
       {
-        this->warning.force_warning("Received unknown command (cmd: 0x%x)\n", this->pending_command_id);
+        this->trace.force_warning("Received unknown command (cmd: 0x%x)\n", this->pending_command_id);
         this->start_command();
         return;
       }
@@ -497,17 +497,17 @@ void spiflash::start()
   if (stim_file_conf != NULL)
   {
     string path = stim_file_conf->get_str();
-    this->get_trace()->msg(vp::trace::LEVEL_INFO, "Preloading memory with stimuli file (path: %s)\n", path.c_str());
+    this->trace.msg(vp::trace::LEVEL_INFO, "Preloading memory with stimuli file (path: %s)\n", path.c_str());
 
     FILE *file = fopen(path.c_str(), "rb");
     if (file == NULL)
     {
-      this->get_trace()->fatal("Unable to open stim file: %s, %s\n", path.c_str(), strerror(errno));
+      this->trace.fatal("Unable to open stim file: %s, %s\n", path.c_str(), strerror(errno));
       return;
     }
     if (fread(this->mem_data, 1, size, file) == 0)
     {
-      this->get_trace()->fatal("Failed to read stim file: %s, %s\n", path.c_str(), strerror(errno));
+      this->trace.fatal("Failed to read stim file: %s, %s\n", path.c_str(), strerror(errno));
       return;
     }
   }
@@ -516,12 +516,12 @@ void spiflash::start()
   if (slm_stim_file_conf != NULL)
   {
     string path = stim_file_conf->get_str();
-    this->get_trace()->msg(vp::trace::LEVEL_INFO, "Preloading memory with slm stimuli file (path: %s)\n", path.c_str());
+    this->trace.msg(vp::trace::LEVEL_INFO, "Preloading memory with slm stimuli file (path: %s)\n", path.c_str());
 
     FILE *file = fopen(path.c_str(), "r");
     if (file == NULL)
     {
-      this->get_trace()->fatal("Unable to open stim file: %s, %s\n", path.c_str(), strerror(errno));
+      this->trace.fatal("Unable to open stim file: %s, %s\n", path.c_str(), strerror(errno));
       return;
     }
 
@@ -531,7 +531,7 @@ void spiflash::start()
       int err;
       if ((err = fscanf(file, "@%x %x\n", &addr, &value)) != 2) {
         if (err == EOF) break;
-        this->get_trace()->fatal("Incorrect stimuli file (path: %s)\n", path.c_str());
+        this->trace.fatal("Incorrect stimuli file (path: %s)\n", path.c_str());
         return;
       }
       if (addr < size) this->mem_data[addr] = value;

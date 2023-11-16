@@ -19,10 +19,11 @@
 #define __VP_PROXY_HPP__
 
 #include <mutex>
+#include <vp/launcher.hpp>
 
 class Gvsoc_launcher;
 
-class Gv_proxy : vp::Notifier
+class Gv_proxy : Gvsoc_launcher_notifier
 {
   public:
     Gv_proxy(vp::time_engine *engine, vp::component *top, Gvsoc_launcher *launcher, bool is_async, int req_pipe=-1, int reply_pipe=-1);

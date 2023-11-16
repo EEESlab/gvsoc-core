@@ -31,12 +31,6 @@ class composite : public vp::component
 public:
     composite(js::config *config);
 
-    vp::port *get_slave_port(std::string name) { return this->ports[name]; }
-    vp::port *get_master_port(std::string name) { return this->ports[name]; }
-
-    void add_slave_port(std::string name, vp::slave_port *port) { this->add_port(name, port); }
-    void add_master_port(std::string name, vp::master_port *port) { this->add_port(name, port); }
-
     int build();
     void start();
     void power_supply_set(int state);
@@ -44,6 +38,12 @@ public:
     void dump_traces(FILE *file);
 
 protected:
+    vp::port *get_slave_port(std::string name) override { return this->ports[name]; }
+    vp::port *get_master_port(std::string name) override { return this->ports[name]; }
+
+    void add_slave_port(std::string name, vp::slave_port *port) override { this->add_port(name, port); }
+    void add_master_port(std::string name, vp::master_port *port) override { this->add_port(name, port); }
+
     vp::trace     trace;
 
 private:

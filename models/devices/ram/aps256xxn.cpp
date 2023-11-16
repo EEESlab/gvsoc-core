@@ -184,7 +184,7 @@ void Aps::handle_array_access(int address, bool is_write, uint8_t data)
 {
     if (address >= this->size)
     {
-        this->warning.force_warning
+        this->trace.force_warning
             ("Received out-of-bound request (addr: 0x%x, ram_size: 0x%x)\n", address, this->size);
     }
     else

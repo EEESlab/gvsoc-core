@@ -137,7 +137,7 @@ Stim_txt::Stim_txt(Microphone *top, std::string file, int width, int freq, bool 
 
     #else
 
-        this->top->get_trace()->fatal("Unable to open file (%s), libsndfile support is not active\n", file.c_str());
+        this->top->trace.fatal("Unable to open file (%s), libsndfile support is not active\n", file.c_str());
         return;
 
     #endif
@@ -148,7 +148,7 @@ Stim_txt::Stim_txt(Microphone *top, std::string file, int width, int freq, bool 
         stim_file = fopen(file.c_str(), "r");
         if (stim_file == NULL)
         {
-            this->top->get_trace()->fatal("Failed to open stimuli file: %s: %s\n", file.c_str(), strerror(errno));
+            this->top->trace.fatal("Failed to open stimuli file: %s: %s\n", file.c_str(), strerror(errno));
         }
     }
 
@@ -318,7 +318,7 @@ int Microphone::build()
 
             if (ext == NULL)
             {
-                this->get_trace()->fatal("Unsupported file extension: %s\n", stim_file.c_str());
+                this->trace.fatal("Unsupported file extension: %s\n", stim_file.c_str());
                 return -1;
             }
 
@@ -336,7 +336,7 @@ int Microphone::build()
             }
             else
             {
-                this->get_trace()->fatal("Unsupported file extension: %s\n", stim_file.c_str());
+                this->trace.fatal("Unsupported file extension: %s\n", stim_file.c_str());
             }
         }
     }

@@ -111,7 +111,7 @@ void Gvsoc_launcher::bind(gv::Gvsoc_user *user)
 
 void Gvsoc_launcher::start()
 {
-    this->instance->build_new();
+    this->instance->build_all();
     this->instance->reset_all(true);
     this->instance->reset_all(false);
 }
@@ -335,7 +335,7 @@ void Gvsoc_launcher::engine_routine()
 
 
 
-void Gvsoc_launcher::register_exec_notifier(vp::Notifier *notifier)
+void Gvsoc_launcher::register_exec_notifier(Gvsoc_launcher_notifier *notifier)
 {
     this->exec_notifiers.push_back(notifier);
 }

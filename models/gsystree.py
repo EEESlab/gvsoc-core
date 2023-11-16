@@ -195,8 +195,8 @@ class Component(object):
 
             self.__set_options(options_list)
 
-        if parent is not None:
-            parent.add_component(name, self)
+        if parent is not None and isinstance(parent, Component):
+            parent.__add_component(name, self)
 
     def i_CLOCK(self) -> SlaveItf:
         """Returns the clock port.
@@ -281,6 +281,33 @@ class Component(object):
             List of C flags to be added.
         """
         self.c_flags += flags
+
+    def itf_bind(self, master_itf_name: str, slave_itf: SlaveItf, signature: str=None):
+        """Bind to a slave interface.
+
+        The specified master interface of this component is bound to the specified
+        slave interface.\n
+        A signature can be specified in order to make sure it is bound to an interface
+        of the same signature.
+
+        Parameters
+        ----------
+        master_itf_name : str
+            Name of the master interface to be bound.
+        slave_itf : SlaveItf
+            Slave interface to which the master interface should be bound.
+        signature : str
+            The signature of the interface. If specified, this is used to check that the interface
+            is bound to a slave interface of the same signature.
+        """
+
+        if signature is not None and slave_itf.signature is not None and \
+                signature != slave_itf.signature:
+            master_name = f'{signature}@{self.get_path()}->{master_itf_name}'
+            slave_name = f'{slave_itf.signature}@{slave_itf.component.get_path()}->{slave_itf.itf_name}'
+            raise RuntimeError(f'Invalid signature (master: {master_name}, slave: {slave_name})')
+
+        self.parent.bind(self, master_itf_name, slave_itf.component, slave_itf.itf_name)
 
     def gen_stimuli(self):
         """Generate stimuli.
@@ -386,7 +413,7 @@ class Component(object):
                 self.parent.declare_runner_target(self.name + '/' + path)
 
 
-    def add_component(self, name, component):
+    def __add_component(self, name, component):
         """Add a new component.
 
         The new component will be a sub-component of this component and will be identified by the specified name
@@ -527,16 +554,6 @@ class Component(object):
         """
         self.bindings.append([master, master_itf, slave, slave_itf, master_properties, slave_properties])
 
-
-    def itf_bind(self, master_itf_name: str, slave_itf: SlaveItf, signature: str=None):
-
-        if signature is not None and slave_itf.signature is not None and \
-                signature != slave_itf.signature:
-            master_name = f'{signature}@{self.get_path()}->{master_itf_name}'
-            slave_name = f'{slave_itf.signature}@{slave_itf.component.get_path()}->{slave_itf.itf_name}'
-            raise RuntimeError(f'Invalid signature (master: {master_name}, slave: {slave_name})')
-
-        self.parent.bind(self, master_itf_name, slave_itf.component, slave_itf.itf_name)
 
 
     def load_property_file(self, path):

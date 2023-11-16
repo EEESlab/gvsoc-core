@@ -287,7 +287,7 @@ vp::io_req_status_e router::req(void *__this, vp::io_req *req)
     {
       if (!entry->itf->is_bound())
       {
-        _this->warning.msg(vp::trace::LEVEL_WARNING, "Invalid access, trying to route to non-connected interface (offset: 0x%llx, size: 0x%llx, is_write: %d)\n", offset, size, !isRead);
+        _this->trace.msg(vp::trace::LEVEL_WARNING, "Invalid access, trying to route to non-connected interface (offset: 0x%llx, size: 0x%llx, is_write: %d)\n", offset, size, !isRead);
         return vp::IO_REQ_INVALID;
       }
       req->arg_push(req->resp_port);

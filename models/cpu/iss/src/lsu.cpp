@@ -144,7 +144,7 @@ int Lsu::data_req_aligned(iss_addr_t addr, uint8_t *data_ptr, int size, bool is_
     else if (err == vp::IO_REQ_INVALID)
     {
 #ifndef CONFIG_GVSOC_ISS_RISCV_EXCEPTIONS
-        vp_warning_always(&this->iss.top.warning,
+        vp_warning_always(&this->iss.trace,
                           "Invalid access (pc: 0x%" PRIxFULLREG ", offset: 0x%" PRIxFULLREG ", size: 0x%x, is_write: %d)\n",
                           this->iss.exec.current_insn, addr, size, is_write);
 #endif
@@ -270,7 +270,7 @@ void Lsu::atomic(iss_insn_t *insn, iss_addr_t addr, int size, int reg_in, int re
     }
     else if (err == vp::IO_REQ_INVALID)
     {
-        vp_warning_always(&this->iss.top.warning,
+        vp_warning_always(&this->iss.trace,
                           "Invalid atomic access (pc: 0x%" PRIxFULLREG ", offset: 0x%" PRIxFULLREG ", size: 0x%x, opcode: %d)\n",
                           this->iss.exec.current_insn, phys_addr, size, opcode);
         return;

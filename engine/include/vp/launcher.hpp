@@ -27,6 +27,13 @@
 #include <condition_variable>
 #include <queue>
 
+class Gvsoc_launcher_notifier
+{
+public:
+    virtual void notify_stop(int64_t time) {}
+    virtual void notify_run(int64_t time) {}
+};
+
 
 class Gvsoc_launcher : public gv::Gvsoc
 {
@@ -71,7 +78,7 @@ public:
     void event_add(std::string path, bool is_regex) override;
     void event_exclude(std::string path, bool is_regex) override;
     void *get_component(std::string path) override;
-    void register_exec_notifier(vp::Notifier *notifier);
+    void register_exec_notifier(Gvsoc_launcher_notifier *notifier);
 
     vp::top *top_get() { return this->handler; }
 
@@ -86,7 +93,7 @@ private:
     bool is_async;
     std::thread *engine_thread;
     std::thread *signal_thread;
-    std::vector<vp::Notifier *> exec_notifiers;
+    std::vector<Gvsoc_launcher_notifier *> exec_notifiers;
     vp::time_engine *engine;
     vp::component *instance;
     Gv_proxy *proxy;

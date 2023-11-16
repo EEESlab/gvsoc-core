@@ -367,7 +367,7 @@ vp::Time_engine_stop_event::Time_engine_stop_event(vp::component *top, vp::time_
 {
     this->engine = engine;
 
-    this->build_instance("stop_event", top);
+    this->build_instance("stop_event", "stop_event", top);
 }
 
 int64_t vp::Time_engine_stop_event::step(int64_t time)

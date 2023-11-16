@@ -93,7 +93,7 @@ void Hyperram::handle_access(int reg_access, int address, int read, uint8_t data
 {
   if (address >= this->size)
   {
-    this->warning.force_warning("Received out-of-bound request (addr: 0x%x, ram_size: 0x%x)\n", address, this->size);
+    this->trace.force_warning("Received out-of-bound request (addr: 0x%x, ram_size: 0x%x)\n", address, this->size);
   }
   else
   {

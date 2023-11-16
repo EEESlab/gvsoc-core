@@ -681,7 +681,7 @@ Tx_stream_libsnd_file::Tx_stream_libsnd_file(I2s_verif *i2s, pi_testbench_i2s_ve
     memset(this->items, 0, sizeof(uint32_t)*this->sfinfo.channels);
 #else
 
-    this->i2s->top->get_trace()->fatal("Unable to open file (%s), libsndfile support is not active\n", filepath.c_str());
+    this->i2s->top->trace.fatal("Unable to open file (%s), libsndfile support is not active\n", filepath.c_str());
     return;
 
 #endif
@@ -806,7 +806,7 @@ Rx_stream_libsnd_file::Rx_stream_libsnd_file(I2s_verif *i2s, pi_testbench_i2s_ve
     this->items = new int32_t[nb_channels];
 #else
 
-    this->i2s->top->get_trace()->fatal("Unable to open file (%s), libsndfile support is not active\n", filepath.c_str());
+    this->i2s->top->trace.fatal("Unable to open file (%s), libsndfile support is not active\n", filepath.c_str());
     return;
 
 #endif

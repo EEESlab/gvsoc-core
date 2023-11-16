@@ -31,7 +31,7 @@ vp::top::top(std::string config_path, bool is_async)
     }
 
     js::config *gv_config = js_config->get("target/gvsoc");
-    vp::component *instance = vp::component::load_component(js_config->get("**/target"), gv_config);
+    vp::component *instance = vp::component::load_component(js_config->get("**/target"), gv_config, NULL, "", "");
 
 
     this->top_instance = instance;
@@ -42,7 +42,7 @@ vp::top::top(std::string config_path, bool is_async)
 
     instance->set_vp_config(gv_config);
 
-    instance->build_instance("", NULL);
+    instance->build_instance("", "", NULL);
 }
 
 

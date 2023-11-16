@@ -47,8 +47,6 @@ namespace vp {
 
     component_trace(component &top);
 
-    void post_post_build();
-
     void new_trace(std::string name, trace *trace, trace_level_e level);
 
     void new_trace_event(std::string name, trace *trace, int width);
